@@ -3,49 +3,42 @@ package com.mpc;
 public class App {
 
 	public static void main(String[] args) {
-		Thread thread1 = new Runner1();
-		Thread thread2 = new Runner2();
-
-		thread1.start();
-		thread2.start();
+		Worker w1 = new Worker();
+		Thread t1 = new Thread(w1);
+		t1.start();
 
 		try {
-			thread1.join();
-			thread2.join();
-		} catch (InterruptedException e) {
+			Thread.sleep(3000);
+		} catch (Exception e) {
 		}
 
-		System.out.println("Completed!");
+		w1.setTerminated(true);
+		System.out.println("Finished");
 	}
 
 }
 
-class Runner1 extends Thread {
+class Worker implements Runnable {
+
+	private volatile boolean isTerminated = false;
+
+	public boolean isTerminated() {
+		return isTerminated;
+	}
 
 	@Override
 	public void run() {
-		for (int i = 0; i < 100; i++) {
-			System.out.println("Runner1: " + i);
+		while (!isTerminated) {
+			System.out.println("Worker says hello!");
 			try {
-				Thread.sleep(1);
+				Thread.sleep(300);
 			} catch (InterruptedException e) {
 			}
 		}
 	}
 
-}
-
-class Runner2 extends Thread {
-
-	@Override
-	public void run() {
-		for (int i = 0; i < 100; i++) {
-			System.out.println("Runner2: " + i);
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-			}
-		}
+	public void setTerminated(boolean isTerminated) {
+		this.isTerminated = isTerminated;
 	}
 
 }
